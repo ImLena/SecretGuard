@@ -10,9 +10,24 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow factoryClass="com.github.imlena.secretguard.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+
+        <notificationGroup id="SecretGuardNotificationGroup"
+                           displayType="BALLOON"/>
+<!--                           key="notification.group.name"/>-->
     </extensions>
 
     <applicationListeners>
         <listener class="com.github.imlena.secretguard.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
     </applicationListeners>
+
+    <actions>
+        <action
+                id="NotifySecretsLeakAction"
+                class="com.github.imlena.secretguard.actions.NotifySecretsLeakAction"
+                text="Test Action"
+                description="Just test action, nothing more">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl T" second-keystroke="ctrl T"/>
+        </action>
+    </actions>
 </idea-plugin>
