@@ -9,7 +9,7 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.imlena.secretguard.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <toolWindow anchor="bottom" factoryClass="com.github.imlena.secretguard.toolWindow.SecretsToolWindowFactory" id="MyToolWindow"/>
         <checkinHandlerFactory implementation="com.github.imlena.secretguard.listeners.CheckSecretsOnCommitListener"
                                id="CheckSecretsOnCommitListener"/>
     </extensions>
