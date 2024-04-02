@@ -1,5 +1,7 @@
 package com.github.imlena.secretguard.toolWindow
 
+import com.github.imlena.secretguard.StringBundle
+import com.github.imlena.secretguard.services.MyProjectService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
@@ -8,8 +10,6 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
-import com.github.imlena.secretguard.MyBundle
-import com.github.imlena.secretguard.services.MyProjectService
 import javax.swing.JButton
 
 
@@ -32,12 +32,12 @@ class MyToolWindowFactory : ToolWindowFactory {
         private val service = toolWindow.project.service<MyProjectService>()
 
         fun getContent() = JBPanel<JBPanel<*>>().apply {
-            val label = JBLabel(MyBundle.message("randomLabel", "?"))
+            val label = JBLabel(StringBundle.string("randomLabel", "?"))
 
             add(label)
-            add(JButton(MyBundle.message("shuffle")).apply {
+            add(JButton(StringBundle.string("shuffle")).apply {
                 addActionListener {
-                    label.text = MyBundle.message("randomLabel", service.getRandomNumber())
+                    label.text = StringBundle.string("randomLabel", service.getRandomNumber())
                 }
             })
         }
