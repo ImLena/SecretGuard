@@ -59,18 +59,9 @@ internal class CheckSecretsOnCommitListener : ExternalToolsCheckinHandlerFactory
                 return when (commit) {
                     Messages.YES -> {
                         val toolWindowManager = ToolWindowManager.getInstance(panel.project)
-                        val toolWindow = toolWindowManager.getToolWindow("Secrets") ?: return ReturnResult.CANCEL
-
-                        toolWindow.show {
-                            val secretsPanel = SecretsPanel(panel.project)
-                            secretsPanel.updateList()
-                            val contentFactory = ContentFactory.getInstance()
-                            toolWindow.contentManager.removeAllContents(true)
-                            val content = contentFactory.createContent(secretsPanel, "", false)
-                            toolWindow.contentManager.addContent(content)
-                        }
-
-                        ReturnResult.CANCEL
+                        val toolWindow = toolWindowManager.getToolWindow("MyToolWindow")
+                        toolWindow?.activate(null)
+                        ReturnResult.CLOSE_WINDOW
                     }
 
                     Messages.NO -> {
