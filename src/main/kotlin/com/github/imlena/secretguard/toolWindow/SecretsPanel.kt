@@ -16,6 +16,7 @@ import javax.swing.DefaultListModel
 import javax.swing.JList
 import javax.swing.JPanel
 import javax.swing.JScrollPane
+import com.intellij.openapi.wm.ToolWindowId.TODO_VIEW
 
 class SecretsPanel(val project: Project) : JPanel(), BulkFileListener {
     private val secretsList = JBList<SecretInfo>()
