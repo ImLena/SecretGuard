@@ -12,8 +12,10 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.ui.ColoredListCellRenderer
+import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBList
 import java.awt.BorderLayout
+import java.awt.Color
 import java.io.File
 import javax.swing.DefaultListModel
 import javax.swing.JList
@@ -58,7 +60,9 @@ class SecretsPanel(val project: Project) : JPanel(), BulkFileListener {
                 selected: Boolean,
                 hasFocus: Boolean
             ) {
-                append(value.virtualFile.name + " : " + value.lineNumber + " - " + value.secretSample)
+                append(value.virtualFile.name + ": " + value.secretSample)
+                append(":" + value.lineNumber,
+                    SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, Color.decode("#787878")))
                 icon = AllIcons.FileTypes.Config
             }
         }
