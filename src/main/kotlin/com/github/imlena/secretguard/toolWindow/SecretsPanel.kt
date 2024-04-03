@@ -1,6 +1,9 @@
 package com.github.imlena.secretguard.toolWindow
 
 import com.github.imlena.secretguard.types.SecretInfo
+import com.github.imlena.secretguard.utils.filterConfigFiles
+import com.github.imlena.secretguard.utils.findAllSecretsInFile
+import com.github.imlena.secretguard.utils.getSearchRegex
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
@@ -16,47 +19,27 @@ import javax.swing.DefaultListModel
 import javax.swing.JList
 import javax.swing.JPanel
 import javax.swing.JScrollPane
-import com.intellij.openapi.wm.ToolWindowId.TODO_VIEW
 
 class SecretsPanel(val project: Project) : JPanel(), BulkFileListener {
     private val secretsList = JBList<SecretInfo>()
 
 
     fun findSecrets(project: Project): List<SecretInfo> {
-
-        val secretPattern =
-           // "^(?i)(pass|login|api_key).*[=:].*['\"].*['\"].*".toRegex()
-        listOf(/*
-            "SECRET_KEY: \"(.*)\"".toRegex(),
-            "(?i)pass\\W*=\\W*['\"]\\s*['\"]\n".toRegex(),
-            "API_KEY: \"(.*)\"".toRegex(),
-            "SECRET_KEY: '(.*)'".toRegex(),
-            "PASSWORD: '(.*)'".toRegex(),
-            "API_KEY: '(.*)'".toRegex(),
-            "SECRET_KEY: (.*)".toRegex(),
-            "PASSWORD: (.*)".toRegex(),
-            "API_KEY: (.*)".toRegex()*/
-            "login = (.*)".toRegex()
-        )
-
+        val secretPattern = getSearchRegex()
         val secretsFound = mutableListOf<SecretInfo>()
         val projectRoot = File(project.basePath!!)
 
+        var cntVisited = 0
         FileUtil.visitFiles(projectRoot) { file ->
             val virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)
-            if (virtualFile != null && !virtualFile.isDirectory && (virtualFile.name.endsWith(".yml")
-                        ||virtualFile.name.endsWith(".yaml") || virtualFile.name.endsWith(".json") || virtualFile.name.endsWith(".kt"))) {
-                virtualFile.toNioPath().toFile().readLines().forEachIndexed { index, line ->
-                    secretPattern.forEach { pattern ->
-                        pattern.find(line)?.let { matchResult ->
-                            secretsFound.add(SecretInfo(project, virtualFile, index + 1, matchResult.value))
-                        }
-                    }
-                }
+            if (filterConfigFiles(virtualFile)) {
+                ++cntVisited
+                findAllSecretsInFile(project, virtualFile!!, secretsFound, secretPattern)
             }
             true
         }
 
+        println("Update panel, checked $cntVisited files, found ${secretsFound.size} secrets")
         return secretsFound
     }
 
@@ -95,9 +78,9 @@ class SecretsPanel(val project: Project) : JPanel(), BulkFileListener {
         secretsList.model = listModel
     }
     override fun after(events: MutableList<out VFileEvent>) {
+        println("Update secrets window tid=" + Thread.currentThread().id)
         for (event in events) {
             if (event.file != null && event.file!!.isInLocalFileSystem) {
-                val filePath = event.file!!.path
                 updateList()
             }
         }

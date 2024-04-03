@@ -1,6 +1,9 @@
 package com.github.imlena.secretguard.listeners;
 
 import com.github.imlena.secretguard.types.SecretInfo
+import com.github.imlena.secretguard.utils.filterConfigFiles
+import com.github.imlena.secretguard.utils.findAllSecretsInFile
+import com.github.imlena.secretguard.utils.getSearchRegex
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.ui.Messages
@@ -92,7 +95,8 @@ internal class CheckSecretsOnCommitListener : ExternalToolsCheckinHandlerFactory
     }
 
     fun findSecrets(project: Project, filesForCommit: MutableCollection<VirtualFile>): List<SecretInfo> {
-        val secretPattern = "^(?i)(pass|login|api_key).*[=:].*['\"].*['\"].*".toRegex()
+        println("Commit listener tid=" + Thread.currentThread().id)
+        val secretPattern = getSearchRegex()
         println("Files in review: " + filesForCommit.size)
 
         val secretsFound = mutableListOf<SecretInfo>()
@@ -100,35 +104,6 @@ internal class CheckSecretsOnCommitListener : ExternalToolsCheckinHandlerFactory
             .filter { file -> filterConfigFiles(file) }
             .forEach { file -> findAllSecretsInFile(project, file, secretsFound, secretPattern)}
         return secretsFound
-    }
-
-    private fun filterConfigFiles(file: VirtualFile): Boolean {
-        return !file.isDirectory &&
-            (file.name.endsWith(".yml")
-                || file.name.endsWith(".yaml")
-                || file.name.endsWith(".json")
-                || file.name.endsWith(".kt")
-            )
-    }
-
-    private fun findAllSecretsInFile(project: Project,
-                                     file: VirtualFile,
-                                     secretsFound: MutableList<SecretInfo>,
-                                     secretPattern: Regex) {
-        println("Filename: $file")
-        file.toNioPath().toFile().readLines().forEachIndexed { index, line ->
-            secretPattern.find(line)?.let { matchResult ->
-                println("Found secret \"${matchResult.value}\" on line number $index")
-                secretsFound.add(
-                    SecretInfo(
-                        project,
-                        file,
-                        index + 1,
-                        matchResult.value
-                    )
-                )
-            }
-        }
     }
 
 }
