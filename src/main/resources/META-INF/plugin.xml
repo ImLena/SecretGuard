@@ -11,11 +11,11 @@
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow anchor="bottom" factoryClass="com.github.imlena.secretguard.toolWindow.SecretsToolWindowFactory"
                     id="Secret Guard"/>
-<!--        <checkinHandlerFactory implementation="com.github.imlena.secretguard.listeners.CheckSecretsOnCommitListener"-->
-<!--                               id="CheckSecretsOnCommitListener"/>-->
+        <checkinHandlerFactory implementation="com.github.imlena.secretguard.listeners.CheckSecretsOnCommitListener"
+                               id="CheckSecretsOnCommitListener"/>
 
-        <checkinHandlerFactory implementation="com.github.imlena.secretguard.listeners.SecretCheckinHandlerFactory"
-                               id="SecretCheckinHandlerFactory"/>
+<!--        <checkinHandlerFactory implementation="com.github.imlena.secretguard.listeners.SecretCheckinHandlerFactory"-->
+<!--                               id="SecretCheckinHandlerFactory"/>-->
 
         <notificationGroup id="SecretGuardNotificationGroup"
                            displayType="BALLOON"/>

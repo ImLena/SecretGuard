@@ -92,48 +92,43 @@ internal class CheckSecretsOnCommitListener : ExternalToolsCheckinHandlerFactory
     }
 
     fun findSecrets(project: Project, filesForCommit: MutableCollection<VirtualFile>): List<SecretInfo> {
-
-        val secretPattern =
-                // "^(?i)(pass|login|api_key).*[=:].*['\"].*['\"].*".toRegex()
-                listOf(/*
-            "SECRET_KEY: \"(.*)\"".toRegex(),
-            "(?i)pass\\W*=\\W*['\"]\\s*['\"]\n".toRegex(),
-            "API_KEY: \"(.*)\"".toRegex(),
-            "SECRET_KEY: '(.*)'".toRegex(),
-            "PASSWORD: '(.*)'".toRegex(),
-            "API_KEY: '(.*)'".toRegex(),
-            "SECRET_KEY: (.*)".toRegex(),
-            "PASSWORD: (.*)".toRegex(),
-            "API_KEY: (.*)".toRegex()*/
-                        "login = (.*)".toRegex()
-                )
+        val secretPattern = "^(?i)(pass|login|api_key).*[=:].*['\"].*['\"].*".toRegex()
+        println("Files in review: " + filesForCommit.size)
 
         val secretsFound = mutableListOf<SecretInfo>()
+        filesForCommit
+            .filter { file -> filterConfigFiles(file) }
+            .forEach { file -> findAllSecretsInFile(project, file, secretsFound, secretPattern)}
+        return secretsFound
+    }
 
-        filesForCommit.forEach { file ->
-            if (!file.isDirectory && (file.name.endsWith(".yml")
-                            || file.name.endsWith(".yaml")
-                            || file.name.endsWith(".json")
-                            || file.name.endsWith(".kt")
-                            )) {
-                file.toNioPath().toFile().readLines().forEachIndexed { index, line ->
-                    secretPattern.forEach { pattern ->
-                        pattern.find(line)?.let { matchResult ->
-                            secretsFound.add(
-                                    SecretInfo(
-                                            project,
-                                            file,
-                                            index + 1,
-                                            matchResult.value
-                                    )
-                            )
-                        }
-                    }
-                }
+    private fun filterConfigFiles(file: VirtualFile): Boolean {
+        return !file.isDirectory &&
+            (file.name.endsWith(".yml")
+                || file.name.endsWith(".yaml")
+                || file.name.endsWith(".json")
+                || file.name.endsWith(".kt")
+            )
+    }
+
+    private fun findAllSecretsInFile(project: Project,
+                                     file: VirtualFile,
+                                     secretsFound: MutableList<SecretInfo>,
+                                     secretPattern: Regex) {
+        println("Filename: $file")
+        file.toNioPath().toFile().readLines().forEachIndexed { index, line ->
+            secretPattern.find(line)?.let { matchResult ->
+                println("Found secret \"${matchResult.value}\" on line number $index")
+                secretsFound.add(
+                    SecretInfo(
+                        project,
+                        file,
+                        index + 1,
+                        matchResult.value
+                    )
+                )
             }
         }
-
-        return secretsFound
     }
 
 }
