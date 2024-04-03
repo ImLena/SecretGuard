@@ -17,30 +17,35 @@ class NotifySecretsLeakAction : AnAction() {
         val project = e.project
         notifySecretsLeak(
                 project = project,
-                leaksCount = 3,
-                onReviewButtonClick = {
-                    val toolWindowManager = project?.let { ToolWindowManager.getInstance(it) }
-                    val todoToolWindow = toolWindowManager?.getToolWindow("MyToolWindow")
-                    todoToolWindow?.activate(null)
-                }
+                leaksCount = 3
         )
     }
 
-    private fun notifySecretsLeak(project: Project?, leaksCount: Int, onReviewButtonClick: () -> Unit) {
-        NotificationGroupManager.getInstance()
-                .getNotificationGroup(NOTIFICATION_GROUP_ID)
-                .createNotification(
-                        title = StringBundle.string("secretsLeakBalloonTitle"),
-                        content = StringBundle.string("secretsLeakBalloonDescription", leaksCount),
-                        type = NotificationType.INFORMATION
-                )
-                .addAction(NotificationAction.createSimpleExpiring(StringBundle.string("secretsLeakBalloonPositiveButton")) {
-                    thisLogger().info("Review secrets clicked")
-                    onReviewButtonClick()
-                })
-                .addAction(NotificationAction.createSimpleExpiring(StringBundle.string("secretsLeakBalloonDismissButton")) {
-                    thisLogger().info("Ignore clicked")
-                })
-                .notify(project)
+    companion object {
+        fun notifySecretsLeak(
+                project: Project?,
+                leaksCount: Int,
+                onReviewButtonClick: () -> Unit = {
+                    val toolWindowManager = project?.let { ToolWindowManager.getInstance(it) }
+                    val todoToolWindow = toolWindowManager?.getToolWindow("Secret Guard")
+                    todoToolWindow?.activate(null)
+                }
+        ) {
+            NotificationGroupManager.getInstance()
+                    .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                    .createNotification(
+                            title = StringBundle.string("secretsLeakBalloonTitle"),
+                            content = StringBundle.string("secretsLeakBalloonDescription", leaksCount),
+                            type = NotificationType.INFORMATION
+                    )
+                    .addAction(NotificationAction.createSimpleExpiring(StringBundle.string("secretsLeakBalloonPositiveButton")) {
+                        thisLogger().info("Review secrets clicked")
+                        onReviewButtonClick()
+                    })
+                    .addAction(NotificationAction.createSimpleExpiring(StringBundle.string("secretsLeakBalloonDismissButton")) {
+                        thisLogger().info("Ignore clicked")
+                    })
+                    .notify(project)
+        }
     }
 }
