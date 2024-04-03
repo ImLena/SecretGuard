@@ -52,6 +52,10 @@ internal class CheckSecretsOnCommitListener : ExternalToolsCheckinHandlerFactory
                     executor: CommitExecutor?,
                     additionalDataConsumer: PairConsumer<Any, Any>?
             ): ReturnResult? {
+                if (!checkSecretGuard) {
+                    return super.beforeCheckin(executor, additionalDataConsumer)
+                }
+
                 val securityBugs = findSecrets(panel.project, panel.virtualFiles)
                 val securityBugFound = securityBugs.isNotEmpty()
 
