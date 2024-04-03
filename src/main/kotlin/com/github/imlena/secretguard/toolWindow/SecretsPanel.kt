@@ -15,6 +15,7 @@ import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.components.JBList
 import java.awt.BorderLayout
 import java.io.File
+import java.util.concurrent.CompletableFuture
 import javax.swing.DefaultListModel
 import javax.swing.JList
 import javax.swing.JPanel
@@ -71,12 +72,16 @@ class SecretsPanel(val project: Project) : JPanel(), BulkFileListener {
         }
     }
 
-    fun updateList() {
-        val secrets = findSecrets(project)
+    private fun updateList() {
+        val secretsFuture = CompletableFuture.supplyAsync {
+            findSecrets(project)
+        }
+        val secrets = secretsFuture.get()
         val listModel = DefaultListModel<SecretInfo>()
         secrets.forEach { listModel.addElement(it) }
         secretsList.model = listModel
     }
+
     override fun after(events: MutableList<out VFileEvent>) {
         println("Update secrets window tid=" + Thread.currentThread().id)
         for (event in events) {
