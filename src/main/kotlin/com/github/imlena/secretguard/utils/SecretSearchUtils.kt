@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 
 fun getSearchRegex(): Regex {
-    return "^(?i)(pass|login|api_key).*[=:].*['\"].*['\"].*".toRegex()
+    return ".*(?i)(pass|login|api_key).*[=:].*['\"].*['\"].*".toRegex()
 }
 
 fun filterConfigFiles(file: VirtualFile?): Boolean {
