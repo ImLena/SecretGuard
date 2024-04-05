@@ -9,7 +9,8 @@ class SecretsToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val secretsPanel = SecretsPanel(project)
-        val content = ContentFactory.getInstance().createContent(secretsPanel, "Secrets", false)
+        val treeSecretsPanel =  TreeSecretsPanel(project)
+        val content = ContentFactory.getInstance().createContent(treeSecretsPanel, "Secrets", false)
         toolWindow.contentManager.addContent(content)
     }
 }

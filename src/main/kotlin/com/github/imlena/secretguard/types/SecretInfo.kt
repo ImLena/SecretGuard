@@ -6,8 +6,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.pom.Navigatable
 
 data class SecretInfo(val project: Project, val virtualFile: VirtualFile, val lineNumber: Int, val secretSample: String) {
-    val filePath: String get() = virtualFile.path
+
     fun toNavigatable(): Navigatable {
+        println("Navigating to file: ${virtualFile.path} at line $lineNumber")
         return OpenFileDescriptor(project, virtualFile, lineNumber - 1, 0)
     }
 }
