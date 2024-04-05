@@ -8,8 +8,13 @@ SecretGuard is an IntelliJ IDEA plugin that allows you to search for secret data
 
 // Will appear in JetBrains Marketplace lately... 💫
 
+### Some funny demo 🌿
+
+[Video] 
+
 ---
 Plugin based on the [IntelliJ Platform Plugin Template][template].
 
 [template]: https://github.com/JetBrains/intellij-platform-plugin-template
 [docs:plugin-description]: https://plugins.jetbrains.com/docs/intellij/plugin-user-experience.html#plugin-description-and-presentation
+[Video]: https://drive.google.com/file/d/1WvSIBjkqomFraM3aa3K_MIgfIAeae_CS/view?usp=drivesdk
